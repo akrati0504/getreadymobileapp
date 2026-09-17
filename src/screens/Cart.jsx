@@ -107,24 +107,38 @@ const Cart = () => {
               <View>
                 <Text style={styles.totalPaidLabel}>TOTAL PAID</Text>
                 <Text style={styles.totalPaidValue}>₹{parseFloat(order.total_amount).toLocaleString('en-IN')}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                   <Icon name="checkmark-circle" size={14} color="#10b981" />
+                   <Text style={{ color: '#10b981', fontSize: 12, fontWeight: '700', marginLeft: 4 }}>
+                     {order.payment_method ? order.payment_method.toUpperCase() : 'RAZORPAY'}
+                   </Text>
+                </View>
               </View>
+              
+              {(isPending || order.status === 'Confirmed') && (
+                <TouchableOpacity 
+                  style={[styles.actionBtn, styles.btnDangerOutline, { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 6 }]} 
+                  onPress={() => { setActiveOrderId(order.id); setCancelModalVisible(true); }}
+                >
+                  <Icon name="close-circle-outline" size={16} color="#ef4444" style={{ marginRight: 4 }} />
+                  <Text style={styles.btnDangerOutlineText}>CANCEL</Text>
+                </TouchableOpacity>
+              )}
             </View>
 
-            {isActive && order.shipments?.length > 0 && (
+            {order.shipments?.length > 0 && order.shipments[0]?.tracking_number && (
               <View style={styles.trackingPill}>
                  <View style={styles.trackingInfo}>
-                   <Text style={styles.trackingLabel}>Shipment Tracking</Text>
-                   <Text style={styles.trackingStatus}>{order.shipments[0].tracking_number || 'Awaiting Tracking Info'}</Text>
+                   <Text style={styles.trackingLabel}>OUTGOING SHIPMENT</Text>
+                   <Text style={styles.trackingStatus}>AWB: {order.shipments[0].tracking_number}</Text>
                  </View>
+                 <TouchableOpacity style={styles.trackBtn}>
+                   <Text style={styles.trackBtnText}>TRACK</Text>
+                 </TouchableOpacity>
               </View>
             )}
 
             <View style={styles.actionButtonsRow}>
-               {isPending && (
-                  <TouchableOpacity style={[styles.actionBtn, styles.btnDangerOutline]} onPress={() => { setActiveOrderId(order.id); setCancelModalVisible(true); }}>
-                    <Text style={styles.btnDangerOutlineText}>Cancel Order</Text>
-                  </TouchableOpacity>
-               )}
                {isActive && order.has_rental_items && (
                  <>
                    <TouchableOpacity style={[styles.actionBtn, styles.btnPrimary]} onPress={() => { /* Open Extend Modal */ }}>

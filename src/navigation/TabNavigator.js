@@ -9,6 +9,7 @@ import Profile from '../screens/Profile';
 import Shop from '../screens/Shop';
 import Analytics from '../screens/Analytics';
 import Browse from '../screens/Browse';
+import EditCloth from '../screens/EditCloth';
 import BottomNav from '../components/BottomNav';
 
 const Tab = createBottomTabNavigator();
@@ -31,6 +32,13 @@ const TabNavigator = () => {
       <Tab.Screen
         name="Browse"
         component={Browse}
+        options={{
+          tabBarItemStyle: { display: 'none' }
+        }}
+      />
+      <Tab.Screen
+        name="EditCloth"
+        component={EditCloth}
         options={{
           tabBarItemStyle: { display: 'none' }
         }}

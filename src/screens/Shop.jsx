@@ -84,9 +84,9 @@ const Shop = () => {
       const orderPayload = {
         payment_method: paymentMethod.toLowerCase(),
         delivery_address: user.address,
-        delivery_city: 'Default City',
-        delivery_state: 'Default State',
-        delivery_pincode: '000000',
+        delivery_city: user.city,
+        delivery_state: user.state,
+        delivery_pincode: user.pincode,
         security_amount: securityDeposit,
         rental_from: rentalFrom,
         rental_to: rentalTo,

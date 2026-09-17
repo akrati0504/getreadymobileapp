@@ -1,17 +1,45 @@
 import React, { useEffect } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMyListings } from '../redux/slices/outfitSlice';
 import styles from '../css/ListingsStyles';
 import TopHeader from '../components/TopHeader';
+import api from '../api/api';
 
 const Listings = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   
   const { myListings, myListingsLoading } = useSelector((state) => state.outfit);
+  const token = useSelector((state) => state.auth?.user?.token || state.auth?.token);
+
+  const handleDelete = (id) => {
+    Alert.alert(
+      'Delete Listing',
+      'Are you sure you want to delete this listing?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await api.delete(`/clothes/${id}`, {
+                headers: { ...(token && { Authorization: `Bearer ${token}` }) }
+              });
+              Alert.alert('Success', 'Listing deleted successfully');
+              dispatch(fetchMyListings());
+            } catch (error) {
+              console.error('Delete error:', error);
+              Alert.alert('Error', error?.response?.data?.message || 'Failed to delete listing');
+            }
+          }
+        }
+      ]
+    );
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -113,7 +141,10 @@ const Listings = () => {
                     >
                       <Icon name="create-outline" size={16} color="#3b82f6" />
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.actionBtn, styles.actionDelete]}>
+                    <TouchableOpacity 
+                      style={[styles.actionBtn, styles.actionDelete]}
+                      onPress={() => handleDelete(item.id)}
+                    >
                       <Icon name="trash-outline" size={16} color="#ef4444" />
                     </TouchableOpacity>
                   </View>

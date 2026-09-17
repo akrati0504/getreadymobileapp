@@ -3,9 +3,12 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, SafeAreaView, Aler
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
+import { Calendar } from 'react-native-calendars';
 import { fetchMyListings } from '../redux/slices/outfitSlice';
 import api from '../api/api';
 import styles from '../css/EditClothStyles';
+import TopHeader from '../components/TopHeader';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 // Reusable Custom Dropdown Component
 const CustomDropdown = ({ label, value, options, onSelect, placeholder, required = false }) => {
@@ -53,10 +56,9 @@ const CustomDropdown = ({ label, value, options, onSelect, placeholder, required
   );
 };
 
-// Reusable Date Picker Component (Simple implementation for React Native without native dependencies)
+// Reusable Date Picker Component
 const CustomDatePicker = ({ label, value, onSelect }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [tempDate, setTempDate] = useState(value || new Date().toISOString().split('T')[0]);
 
   return (
     <View style={styles.col}>
@@ -67,29 +69,27 @@ const CustomDatePicker = ({ label, value, onSelect }) => {
       </TouchableOpacity>
 
       <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModalVisible(false)}>
-        <View style={[styles.modalOverlay, { justifyContent: 'center', padding: 20 }]}>
-          <View style={[styles.modalContent, { borderRadius: 12 }]}>
-            <Text style={styles.modalTitle}>Enter Date</Text>
-            <Text style={{ fontSize: 12, color: '#64748B', marginBottom: 10 }}>Format: YYYY-MM-DD</Text>
-            <TextInput
-              style={styles.input}
-              value={tempDate}
-              onChangeText={setTempDate}
-              placeholder="2024-12-31"
+        <TouchableOpacity 
+          style={[styles.modalOverlay, { justifyContent: 'center', padding: 20 }]} 
+          activeOpacity={1} 
+          onPress={() => setModalVisible(false)}
+        >
+          <View style={[styles.modalContent, { borderRadius: 12, padding: 0, overflow: 'hidden' }]}>
+            <Calendar
+              onDayPress={(day) => {
+                onSelect(day.dateString);
+                setModalVisible(false);
+              }}
+              markedDates={value ? {
+                [value]: { selected: true, selectedColor: '#3B82F6' }
+              } : {}}
+              theme={{
+                todayTextColor: '#3B82F6',
+                arrowColor: '#3B82F6',
+              }}
             />
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 20 }}>
-              <TouchableOpacity style={{ padding: 10 }} onPress={() => setModalVisible(false)}>
-                <Text style={{ color: '#64748B', fontWeight: '600' }}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={{ padding: 10, marginLeft: 15, backgroundColor: '#3B82F6', borderRadius: 6 }} 
-                onPress={() => { onSelect(tempDate); setModalVisible(false); }}
-              >
-                <Text style={{ color: '#fff', fontWeight: '600' }}>Confirm</Text>
-              </TouchableOpacity>
-            </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </Modal>
     </View>
   );
@@ -285,6 +285,31 @@ const EditCloth = () => {
     setBlockedDates(newDates);
   };
 
+  const handleAddImage = () => {
+    launchImageLibrary(
+      {
+        mediaType: 'photo',
+        selectionLimit: 0,
+        quality: 0.8,
+      },
+      (response) => {
+        if (response.didCancel) return;
+        if (response.errorCode) {
+          Alert.alert('Error', response.errorMessage);
+          return;
+        }
+        if (response.assets) {
+          const newImages = response.assets.map(asset => ({
+            uri: asset.uri,
+            type: asset.type,
+            fileName: asset.fileName,
+          }));
+          setImages(prev => [...prev, ...newImages]);
+        }
+      }
+    );
+  };
+
   const handleDeleteImage = async (imageId, index) => {
     Alert.alert('Delete Image', 'Are you sure you want to remove this image?', [
       { text: 'Cancel', style: 'cancel' },
@@ -331,10 +356,31 @@ const EditCloth = () => {
   const handleUpdate = async () => {
     setLoading(true);
     try {
+      const submitData = new FormData();
+      Object.keys(formData).forEach(key => {
+        if (formData[key] !== null && formData[key] !== undefined) {
+          let val = formData[key];
+          if (typeof val === 'boolean') {
+            val = val ? 1 : 0;
+          }
+          submitData.append(key, val);
+        }
+      });
+
+      images.forEach((img, index) => {
+        if (!img.id && img.uri) {
+          submitData.append('images[]', {
+            uri: img.uri,
+            type: img.type || 'image/jpeg',
+            name: img.fileName || `new_image_${index}.jpg`,
+          });
+        }
+      });
+
       // 1. Update main cloth data
-      const response = await api.post(`/clothes/${cloth.id}/update`, formData, {
+      const response = await api.post(`/clothes/${cloth.id}/update`, submitData, {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
           'Accept': 'application/json',
           ...(token && { Authorization: `Bearer ${token}` })
         }
@@ -366,8 +412,39 @@ const EditCloth = () => {
     }
   };
 
+  const handleDeleteCloth = () => {
+    Alert.alert(
+      'Delete Listing',
+      'Are you sure you want to delete this item? This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive',
+          onPress: async () => {
+            setLoading(true);
+            try {
+              await api.delete(`/clothes/${cloth.id}`, {
+                headers: { ...(token && { Authorization: `Bearer ${token}` }) }
+              });
+              Alert.alert('Success', 'Listing deleted successfully');
+              dispatch(fetchMyListings());
+              navigation.goBack();
+            } catch (error) {
+              console.error('Delete cloth error:', error);
+              Alert.alert('Error', error?.response?.data?.message || 'Failed to delete listing');
+            } finally {
+              setLoading(false);
+            }
+          }
+        }
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      <TopHeader />
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -375,6 +452,9 @@ const EditCloth = () => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Management Center</Text>
         </View>
+        <TouchableOpacity onPress={handleDeleteCloth} style={{ padding: 5 }}>
+          <Icon name="trash-outline" size={24} color="#EF4444" />
+        </TouchableOpacity>
       </View>
 
       {loadingCloth ? (
@@ -504,7 +584,7 @@ const EditCloth = () => {
                   </View>
                 );
               })}
-              <TouchableOpacity style={[styles.imageContainer, styles.addImageBtn]}>
+              <TouchableOpacity style={[styles.imageContainer, styles.addImageBtn]} onPress={handleAddImage}>
                 <Icon name="add-circle-outline" size={24} color="#64748B" />
                 <Text style={styles.addImageText}>Add More</Text>
               </TouchableOpacity>

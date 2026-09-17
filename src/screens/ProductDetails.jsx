@@ -270,7 +270,9 @@ const ProductDetails = () => {
 
       if (response.success) {
         setIsRented(true);
-        Alert.alert('Success', 'Item added to your bag for renting!');
+        Alert.alert('Success', 'Item added to your bag for renting!', [
+          { text: 'OK', onPress: () => navigation.navigate('Home', { screen: 'Shop' }) }
+        ]);
       } else {
         Alert.alert('Error', response.message || 'Error adding to bag');
       }
@@ -299,7 +301,9 @@ const ProductDetails = () => {
 
       if (response.success) {
         setIsPurchased(true);
-        Alert.alert('Success', 'Item added to your bag for purchase!');
+        Alert.alert('Success', 'Item added to your bag for purchase!', [
+          { text: 'OK', onPress: () => navigation.navigate('Home', { screen: 'Shop' }) }
+        ]);
       } else {
         Alert.alert('Error', response.message || 'Error adding to bag');
       }

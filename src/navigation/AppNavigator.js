@@ -6,7 +6,6 @@ import ProductDetails from '../screens/ProductDetails';
 import Splash from '../screens/Splash';
 import RejectedItems from '../screens/RejectedItems';
 import Browse from '../screens/Browse';
-import EditCloth from '../screens/EditCloth';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,7 +18,6 @@ const AppNavigator = () => {
       <Stack.Screen name="ProductDetails" component={ProductDetails} />
       <Stack.Screen name="RejectedItems" component={RejectedItems} />
       <Stack.Screen name="Browse" component={Browse} />
-      <Stack.Screen name="EditCloth" component={EditCloth} />
     </Stack.Navigator>
   );
 };
