@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   iconButton: {
     marginLeft: 12,
   },
-  
+
   // Form Content
   formContainer: {
     padding: 15,
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginTop: 10,
   },
-  
+
   // Section Cards
   sectionCard: {
     backgroundColor: '#ffffff',
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  
+
   // Photo Upload
   photoUploadBox: {
     borderWidth: 2,
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fafafa',
   },
-  
+
   // Inputs
   inputGroup: {
     marginBottom: 15,
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: 'top',
   },
-  
+
   // Grid layouts
   row: {
     flexDirection: 'row',
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   halfInput: {
     width: '48%',
   },
-  
+
   // Price Inputs (with prepended symbol)
   priceInputContainer: {
     flexDirection: 'row',
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-Regular',
     color: '#333',
   },
-  
+
   // Toggle Switch Box
   toggleBox: {
     flexDirection: 'row',
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 5,
   },
-  
+
   // Bottom Button Container (now at end of scroll)
   submitContainer: {
     paddingHorizontal: 5,
