@@ -1,18 +1,28 @@
 import React, { useState } from 'react';
 import { View, Image, TouchableOpacity, TextInput, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from '../css/TopHeaderStyles';
 import AccountMenuModal from './AccountMenuModal';
 import NotificationsModal from './NotificationsModal';
+import { fetchUnreadCount } from '../redux/slices/notificationSlice';
 
 const TopHeader = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const dispatch = useDispatch();
+  const { unreadCount } = useSelector(state => state.notifications);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(fetchUnreadCount());
+    }, [dispatch])
+  );
 
   const handleLogoPress = () => {
     // If not already on HomeTab, go there. Otherwise, just do nothing or go top.
@@ -42,9 +52,11 @@ const TopHeader = () => {
         <View style={styles.headerIcons}>
           <TouchableOpacity style={styles.iconButton} onPress={() => setIsNotificationsVisible(true)}>
             <Icon name="notifications-outline" size={24} color="#282c3f" />
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>1</Text>
-            </View>
+            {unreadCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
+              </View>
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.iconButton} onPress={() => setIsMenuVisible(true)}>

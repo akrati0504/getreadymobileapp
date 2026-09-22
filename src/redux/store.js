@@ -7,6 +7,8 @@ import outfitReducer from './slices/outfitSlice';
 import clothesReducer from './slices/clothesSlice';
 import cartReducer from './slices/cartSlice';
 import orderReducer from './slices/orderSlice';
+import notificationReducer from './slices/notificationSlice';
+import rejectionReducer from './slices/rejectionSlice';
 
 export const store = configureStore({
   reducer: {
@@ -18,5 +20,7 @@ export const store = configureStore({
     clothes: clothesReducer,
     cart: cartReducer,
     order: orderReducer,
+    notifications: notificationReducer,
+    rejections: rejectionReducer,
   },
 });

@@ -70,7 +70,7 @@ const Listings = () => {
         ) : (
           myListings && myListings.length > 0 ? (
             myListings.map((item) => {
-              const API_BASE_URL = 'http://192.168.1.11:8000';
+              const API_BASE_URL = 'http://192.168.1.5:8000';
               const imageUrl = item.images && item.images.length > 0 
                 ? { uri: `${API_BASE_URL}/storage/${item.images[0].image_path}` }
                 : require('../assets/images/logo.png');

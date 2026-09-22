@@ -334,7 +334,7 @@ const ProductDetails = () => {
 
   // Format images cleanly from Laravel relationship
   const gallery = Array.isArray(product.images) && product.images.length > 0
-    ? product.images.map(img => `http://192.168.1.11:8000/storage/${img.image_path}`)
+    ? product.images.map(img => `http://192.168.1.5:8000/storage/${img.image_path}`)
     : [];
 
   return (

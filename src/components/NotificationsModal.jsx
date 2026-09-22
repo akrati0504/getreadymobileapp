@@ -1,34 +1,29 @@
-import React from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, TouchableWithoutFeedback, Dimensions, ScrollView } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, TouchableWithoutFeedback, Dimensions, ScrollView, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchNotifications, markAllAsRead, markAsRead } from '../redux/slices/notificationSlice';
 
 const { height } = Dimensions.get('window');
 
-const mockNotifications = [
-  {
-    id: 1,
-    title: 'Item Approved',
-    message: "Your item 'Royal Export Floral Embroidered Regular Thread Work Straight Kurta with Palazzos & Dupatta' has been approved and is now live on our platform!",
-    time: '18 days ago',
-    unread: true,
-  },
-  {
-    id: 2,
-    title: 'Item Approved',
-    message: "Your item 'INVICTUS Notched Lapel 2-Piece Formal Suits' has been approved and is now live on our platform!",
-    time: '18 days ago',
-    unread: true,
-  },
-  {
-    id: 3,
-    title: 'Item Approved',
-    message: "Your item 'Royal Export Ethnic Motifs Embroidered Cotton Fit & Flare Maxi Ethnic Dress With Dupatta' has been approved and is now live on our platform!",
-    time: '18 days ago',
-    unread: true,
-  },
-];
-
 const NotificationsModal = ({ visible, onClose }) => {
+  const dispatch = useDispatch();
+  const { data: notifications, isLoading, unreadCount, error } = useSelector(state => state.notifications);
+
+  useEffect(() => {
+    if (visible) {
+      dispatch(fetchNotifications());
+    }
+  }, [visible, dispatch]);
+
+  const handleMarkAllRead = () => {
+    dispatch(markAllAsRead());
+  };
+
+  const handleMarkAsRead = (id) => {
+    dispatch(markAsRead(id));
+  };
+
   return (
     <Modal
       visible={visible}
@@ -41,26 +36,43 @@ const NotificationsModal = ({ visible, onClose }) => {
           <TouchableWithoutFeedback>
             <View style={styles.menuContainer}>
               <View style={styles.header}>
-                <Text style={styles.headerTitle}>Notifications</Text>
-                <TouchableOpacity>
-                  <Text style={styles.markAllRead}>Mark All Read</Text>
-                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Notifications {unreadCount > 0 && `(${unreadCount})`}</Text>
+                {unreadCount > 0 && (
+                  <TouchableOpacity onPress={handleMarkAllRead}>
+                    <Text style={styles.markAllRead}>Mark All Read</Text>
+                  </TouchableOpacity>
+                )}
               </View>
 
               <ScrollView style={styles.listContainer} showsVerticalScrollIndicator={false}>
-                {mockNotifications.map((notif) => (
-                  <View key={notif.id} style={[styles.notificationItem, notif.unread && styles.unreadItem]}>
-                    <View style={styles.iconContainer}>
-                      <Icon name="checkmark-circle-outline" size={24} color="#10b981" />
-                    </View>
-                    <View style={styles.contentContainer}>
-                      <Text style={styles.title}>{notif.title}</Text>
-                      <Text style={styles.message}>{notif.message}</Text>
-                      <Text style={styles.time}>{notif.time}</Text>
-                    </View>
-                    {notif.unread && <View style={styles.unreadDot} />}
-                  </View>
-                ))}
+                {isLoading ? (
+                  <ActivityIndicator size="small" color="#f59e0b" style={{ marginTop: 20 }} />
+                ) : error ? (
+                  <Text style={{ textAlign: 'center', padding: 20, color: 'red' }}>Error: {error}</Text>
+                ) : notifications && notifications.filter(n => !n.read_at && n.read !== true).length > 0 ? (
+                  notifications.filter(n => !n.read_at && n.read !== true).map((notif) => {
+                    const isUnread = true; // since they are all unread now
+                    return (
+                      <TouchableOpacity 
+                        key={notif.id} 
+                        style={[styles.notificationItem, styles.unreadItem]}
+                        onPress={() => handleMarkAsRead(notif.id)}
+                      >
+                        <View style={styles.iconContainer}>
+                          <Icon name="checkmark-circle-outline" size={24} color="#10b981" />
+                        </View>
+                        <View style={styles.contentContainer}>
+                          <Text style={styles.title}>{notif.title || 'Notification'}</Text>
+                          <Text style={styles.message}>{notif.message || ''}</Text>
+                          <Text style={styles.time}>{new Date(notif.created_at).toLocaleDateString()}</Text>
+                        </View>
+                        <View style={styles.unreadDot} />
+                      </TouchableOpacity>
+                    );
+                  })
+                ) : (
+                  <Text style={{ textAlign: 'center', padding: 20, color: '#64748b' }}>No notifications yet</Text>
+                )}
               </ScrollView>
             </View>
           </TouchableWithoutFeedback>

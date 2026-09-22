@@ -574,7 +574,7 @@ const EditCloth = () => {
             
             <View style={styles.imageGrid}>
               {images.map((img, index) => {
-                const uri = img.image_path ? `http://192.168.1.11:8000/storage/${img.image_path}` : img.uri;
+                const uri = img.image_path ? `http://192.168.1.5:8000/storage/${img.image_path}` : img.uri;
                 return (
                   <View key={img.id || index} style={styles.imageContainer}>
                     <Image source={{ uri }} style={styles.image} />

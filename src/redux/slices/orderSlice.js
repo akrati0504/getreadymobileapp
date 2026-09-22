@@ -52,6 +52,21 @@ export const fetchOrders = createAsyncThunk(
   }
 );
 
+export const fetchSales = createAsyncThunk(
+  'order/fetchSales',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const response = await api.get('/sales', {
+        headers: getAuthHeaders(getState),
+      });
+      if (!response.data.success) return rejectWithValue(response.data.message);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 // New Actions to match Web App Flow
 
 export const cancelOrder = createAsyncThunk(
@@ -163,6 +178,7 @@ export const rateOrder = createAsyncThunk(
 const initialState = {
   currentOrder: null,
   orders: { data: [], current_page: 1, last_page: 1, total: 0 },
+  sales: { data: [], current_page: 1, last_page: 1, total: 0 },
   isLoading: false,
   error: null,
 };
@@ -212,6 +228,13 @@ const orderSlice = createSlice({
         state.orders = action.payload.orders; 
       })
       .addCase(fetchOrders.rejected, handleRejected)
+      // Fetch Sales
+      .addCase(fetchSales.pending, handlePending)
+      .addCase(fetchSales.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.sales = action.payload.orders; // The backend returns 'orders' in the payload
+      })
+      .addCase(fetchSales.rejected, handleRejected)
       // Generic loading states for mutations
       .addCase(cancelOrder.pending, handlePending)
       .addCase(cancelOrder.fulfilled, (state) => { state.isLoading = false; })
