@@ -5,7 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Calendar } from 'react-native-calendars';
 import { fetchMyListings } from '../redux/slices/outfitSlice';
-import api from '../api/api';
+import api, { IMAGE_BASE_URL } from '../api/api';
 import styles from '../css/EditClothStyles';
 import TopHeader from '../components/TopHeader';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -164,8 +164,9 @@ const EditCloth = () => {
       
       if (data) {
         let unit = data.measurement_unit || 'Inches';
-        if (unit.toLowerCase() === 'inches') unit = 'Inches';
+        if (unit.toLowerCase() === 'inches' || unit.toLowerCase() === 'inch') unit = 'Inches';
         else if (unit.toLowerCase() === 'cm') unit = 'cm';
+        else unit = 'Inches';
         
         setFormData({
             title: data.title || '',
@@ -403,7 +404,7 @@ const EditCloth = () => {
       
       Alert.alert('Success', 'Cloth updated successfully');
       dispatch(fetchMyListings()); 
-      navigation.goBack();
+      navigation.navigate('Listings');
     } catch (error) {
       console.error('Update cloth error:', error);
       Alert.alert('Error', error?.response?.data?.message || 'Failed to update cloth');
@@ -429,7 +430,7 @@ const EditCloth = () => {
               });
               Alert.alert('Success', 'Listing deleted successfully');
               dispatch(fetchMyListings());
-              navigation.goBack();
+              navigation.navigate('Listings');
             } catch (error) {
               console.error('Delete cloth error:', error);
               Alert.alert('Error', error?.response?.data?.message || 'Failed to delete listing');
@@ -447,7 +448,7 @@ const EditCloth = () => {
       <TopHeader />
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Listings')}>
             <Icon name="close" size={24} color="#0F172A" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Management Center</Text>
@@ -574,7 +575,7 @@ const EditCloth = () => {
             
             <View style={styles.imageGrid}>
               {images.map((img, index) => {
-                const uri = img.image_path ? `http://192.168.1.5:8000/storage/${img.image_path}` : img.uri;
+                const uri = img.image_path ? `${IMAGE_BASE_URL}/${img.image_path}` : img.uri;
                 return (
                   <View key={img.id || index} style={styles.imageContainer}>
                     <Image source={{ uri }} style={styles.image} />

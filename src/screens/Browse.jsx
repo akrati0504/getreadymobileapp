@@ -1,18 +1,19 @@
 import React, { useEffect } from 'react';
 import { View, Text, SafeAreaView, TouchableOpacity, Image, ScrollView, FlatList, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCategories } from '../redux/slices/categorySlice';
 import { fetchBrands } from '../redux/slices/brandSlice';
 import { fetchDropdowns } from '../redux/slices/dropdownSlice';
-import { fetchClothes, clearFilters } from '../redux/slices/clothesSlice';
+import { fetchClothes, clearFilters, toggleArrayFilter } from '../redux/slices/clothesSlice';
 import styles from '../css/BrowseStyles';
 import TopHeader from '../components/TopHeader';
 import BrowseFilters from '../components/BrowseFilters';
 
 const Browse = () => {
   const navigation = useNavigation();
+  const route = useRoute();
   const dispatch = useDispatch();
 
   const { data: clothesData, loading: clothesLoading, error: clothesError, filters } = useSelector(state => state.clothes);
@@ -23,6 +24,16 @@ const Browse = () => {
     dispatch(fetchBrands());
     dispatch(fetchDropdowns());
   }, [dispatch]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (route.params?.initialFilter) {
+        dispatch(clearFilters());
+        dispatch(toggleArrayFilter({ key: route.params.initialFilter.key, value: route.params.initialFilter.value }));
+        navigation.setParams({ initialFilter: null });
+      }
+    }, [route.params?.initialFilter, dispatch, navigation])
+  );
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {

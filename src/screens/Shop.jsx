@@ -353,7 +353,7 @@ const Shop = () => {
             </Text>
             <TouchableOpacity
               style={styles.startBrowsingBtn}
-              onPress={() => navigation.navigate('HomeTab')}
+              onPress={() => navigation.navigate('Browse')}
             >
               <Text style={styles.startBrowsingText}>Start Browsing</Text>
             </TouchableOpacity>

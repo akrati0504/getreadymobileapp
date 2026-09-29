@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, FlatList, Modal, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
+import { IMAGE_BASE_URL } from '../api/api';
 import styles from '../css/HomeStyles';
 
 const TopBrands = () => {
@@ -35,7 +36,7 @@ const TopBrands = () => {
               <View style={styles.brandIconWrapper}>
                 <Image
                   source={{
-                    uri: `http://192.168.1.11:8000/storage/${brand.logo}`,
+                    uri: `${IMAGE_BASE_URL}/${brand.logo}`,
                   }}
                   style={styles.brandImage}
                   resizeMode="contain"
@@ -72,7 +73,7 @@ const TopBrands = () => {
                 <View style={styles.brandIconWrapper}>
                   <Image
                     source={{
-                      uri: `http://192.168.1.34:8000/storage/${item.logo}`,
+                      uri: `${IMAGE_BASE_URL}/${item.logo}`,
                     }}
                     style={styles.brandImage}
                     resizeMode="contain"

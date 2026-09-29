@@ -159,7 +159,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
-  actionStatus: {
+  actionStatusPending: { backgroundColor: '#fef3c7' }, actionStatusRejected: { backgroundColor: '#fee2e2' }, actionStatus: {
     backgroundColor: '#dcfce7', // light green
   },
   actionView: {

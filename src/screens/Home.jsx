@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import { ScrollView, SafeAreaView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styles from '../css/HomeStyles';
 import TopHeader from '../components/TopHeader';
 import Carousel from '../components/Carousel';
@@ -18,6 +19,7 @@ const carouselData = [
 
 const Home = () => {
   const dispatch = useDispatch();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     dispatch(fetchBrands());
@@ -25,10 +27,10 @@ const Home = () => {
   }, [dispatch])
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <TopHeader />
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 + insets.bottom }}>
 
         {/* Hero Carousel Section */}
         <Carousel data={carouselData} />
@@ -43,7 +45,7 @@ const Home = () => {
         <StylesForOccasion />
 
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

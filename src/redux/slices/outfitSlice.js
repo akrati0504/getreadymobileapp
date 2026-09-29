@@ -19,6 +19,13 @@ export const submitOutfit = createAsyncThunk(
         try {
             const state = getState();
             const token = state.auth?.user?.token || state.auth?.token;
+            
+            // Fix: Append user_id to the payload so backend knows who owns the outfit
+            const userId = state.auth?.user?.id || state.auth?.user?.user?.id;
+            if (userId) {
+                formData.append('user_id', userId);
+            }
+
             const response = await api.post('/outfits', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',

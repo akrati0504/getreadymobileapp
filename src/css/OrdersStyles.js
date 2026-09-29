@@ -194,6 +194,8 @@ export default StyleSheet.create({
     borderRadius: 4,
     alignSelf: 'flex-start',
     marginBottom: 10,
+    flexShrink: 1,
+    marginRight: 10,
   },
   orderStatusText: {
     color: '#16a34a',

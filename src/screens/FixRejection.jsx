@@ -7,6 +7,7 @@ import { fetchRejectionDetails, fetchFormData, submitRejectionFix, fetchRejectio
 import { launchImageLibrary } from 'react-native-image-picker';
 import styles from '../css/EditClothStyles';
 import TopHeader from '../components/TopHeader';
+import { IMAGE_BASE_URL } from '../api/api';
 
 // Reusable Custom Dropdown Component
 const CustomDropdown = ({ label, value, options, onSelect, placeholder, required = false }) => {
@@ -317,7 +318,7 @@ const FixRejection = () => {
           
           <View style={styles.imageGrid}>
             {images.map((img, index) => {
-              const uri = img.image_path ? `http://192.168.1.5:8000/storage/${img.image_path}` : img.uri;
+              const uri = img.image_path ? `${IMAGE_BASE_URL}/${img.image_path}` : img.uri;
               return (
                 <View key={img.id || index} style={styles.imageContainer}>
                   <Image source={{ uri }} style={styles.image} />

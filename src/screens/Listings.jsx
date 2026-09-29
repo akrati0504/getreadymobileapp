@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchMyListings } from '../redux/slices/outfitSlice';
 import styles from '../css/ListingsStyles';
 import TopHeader from '../components/TopHeader';
-import api from '../api/api';
+import api, { IMAGE_BASE_URL } from '../api/api';
 
 const Listings = () => {
   const navigation = useNavigation();
@@ -70,9 +70,8 @@ const Listings = () => {
         ) : (
           myListings && myListings.length > 0 ? (
             myListings.map((item) => {
-              const API_BASE_URL = 'http://192.168.1.5:8000';
               const imageUrl = item.images && item.images.length > 0 
-                ? { uri: `${API_BASE_URL}/storage/${item.images[0].image_path}` }
+                ? { uri: `${IMAGE_BASE_URL}/${item.images[0].image_path}` }
                 : require('../assets/images/logo.png');
                 
               const updatedDate = new Date(item.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -121,13 +120,22 @@ const Listings = () => {
                     )}
 
                     <View style={styles.cardFooter}>
-                      <Text style={styles.footerText}># SKU: {item.sku} | Updated: {updatedDate}</Text>
+                      <Text style={styles.footerText}># SKU: {item.sku || item.id} | Updated: {updatedDate}</Text>
                     </View>
                   </View>
 
                   <View style={styles.actionsContainer}>
-                    <TouchableOpacity style={[styles.actionBtn, styles.actionStatus]}>
-                      <Icon name="checkmark-circle" size={16} color="#10b981" />
+                    <TouchableOpacity style={[
+                      styles.actionBtn, 
+                      item.is_approved === 1 ? styles.actionStatus : 
+                      item.is_approved === 0 ? styles.actionStatusRejected : 
+                      styles.actionStatusPending
+                    ]}>
+                      <Icon 
+                        name={item.is_approved === 1 ? "checkmark-circle" : item.is_approved === 0 ? "close-circle" : "time-outline"} 
+                        size={16} 
+                        color={item.is_approved === 1 ? "#10b981" : item.is_approved === 0 ? "#ef4444" : "#f59e0b"} 
+                      />
                     </TouchableOpacity>
                     <TouchableOpacity 
                       style={[styles.actionBtn, styles.actionView]}

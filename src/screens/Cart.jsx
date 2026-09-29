@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrders } from '../redux/slices/orderSlice';
 import styles from '../css/OrdersStyles';
 import TopHeader from '../components/TopHeader';
+import { IMAGE_BASE_URL } from '../api/api';
 import { CancelOrderModal, ReturnOrderModal, RateOrderModal, ExtendOrderModal, BuyOrderModal } from '../components/OrderActionModals';
 
 const Cart = () => {
@@ -77,9 +78,8 @@ const Cart = () => {
       const firstItem = order.items && order.items.length > 0 ? order.items[0] : null;
       const clothName = firstItem?.cloth?.title || 'Order Item(s)';
 
-      const API_BASE_URL = 'http://192.168.1.5:8000';
       const clothImage = firstItem?.cloth?.images?.[0]?.image_path
-        ? { uri: `${API_BASE_URL}/storage/${firstItem.cloth.images[0].image_path}` }
+        ? { uri: `${IMAGE_BASE_URL}/${firstItem.cloth.images[0].image_path}` }
         : require('../assets/images/logo.png');
 
       const isPending = order.status === 'Pending';

@@ -3,7 +3,8 @@ import { View, Text, Modal, TouchableOpacity, StyleSheet, ActivityIndicator, Tex
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useDispatch } from 'react-redux';
 import { Calendar } from 'react-native-calendars';
-import { cancelOrder, returnOrder, rateOrder, extendOrder, getBuyQuote, buyOrder } from '../redux/slices/orderSlice';
+import RazorpayCheckout from 'react-native-razorpay';
+import { cancelOrder, returnOrder, rateOrder, extendOrder, getBuyQuote, buyOrder, verifyBuyOrder } from '../redux/slices/orderSlice';
 
 // 0. CancelOrderModal
 export const CancelOrderModal = ({ visible, onClose, orderId, onComplete }) => {
@@ -234,11 +235,45 @@ export const BuyOrderModal = ({ visible, onClose, orderId, clothId, onComplete }
   const handleBuy = async () => {
     setLoading(true);
     try {
-      await dispatch(buyOrder({ orderId, clothId })).unwrap();
-      if (onComplete) onComplete();
-      onClose();
+      const res = await dispatch(buyOrder({ orderId, clothId })).unwrap();
+      
+      if (res.requires_payment && res.razorpay_order) {
+        var options = {
+          description: 'Buy Rental Outright',
+          currency: res.razorpay_order.currency || 'INR',
+          key: res.key,
+          amount: res.razorpay_order.amount,
+          name: 'GetReady Rental',
+          theme: { color: '#10b981' }
+        };
+        
+        RazorpayCheckout.open(options).then(async (data) => {
+          try {
+            await dispatch(verifyBuyOrder({
+              order_item_id: res.order_item_id,
+              razorpay_payment_id: data.razorpay_payment_id
+            })).unwrap();
+            
+            if (onComplete) onComplete();
+            onClose();
+          } catch (verifyError) {
+            console.error('Verification Error:', verifyError);
+            alert('Payment successful but verification failed.');
+            setLoading(false);
+          }
+        }).catch((error) => {
+          console.error('Razorpay Error:', error);
+          setLoading(false);
+        });
+        
+        return; // Loading state handled by Razorpay callback
+      } else {
+        if (onComplete) onComplete();
+        onClose();
+      }
     } catch (e) {
       console.error(e);
+      alert(typeof e === 'string' ? e : 'An error occurred');
     }
     setLoading(false);
   };
@@ -313,7 +348,7 @@ export const BuyOrderModal = ({ visible, onClose, orderId, clothId, onComplete }
 export const RateOrderModal = ({ visible, onClose, orderId, onComplete }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [rating, setRating] = useState(5);
+  const [rating, setRating] = useState(0);
   const [review, setReview] = useState('');
 
   const handleRate = async () => {
@@ -365,8 +400,12 @@ export const RateOrderModal = ({ visible, onClose, orderId, onComplete }) => {
             <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
               <Text style={styles.closeBtnText}>Close</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.primaryBtn} onPress={handleRate} disabled={loading}>
-              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>Submit Review</Text>}
+            <TouchableOpacity 
+              style={rating > 0 ? styles.primaryBtn : styles.disabledBtn} 
+              onPress={handleRate} 
+              disabled={loading || rating === 0}
+            >
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={rating > 0 ? styles.primaryBtnText : styles.disabledBtnText}>Submit Review</Text>}
             </TouchableOpacity>
           </View>
         </View>

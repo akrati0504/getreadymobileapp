@@ -159,6 +159,21 @@ export const buyOrder = createAsyncThunk(
   }
 );
 
+export const verifyBuyOrder = createAsyncThunk(
+  'order/verifyBuyOrder',
+  async (data, { getState, rejectWithValue }) => {
+    try {
+      const response = await api.post('/orders/conversion/verify', data, {
+        headers: getAuthHeaders(getState),
+      });
+      if (!response.data.success) return rejectWithValue(response.data.message);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 export const rateOrder = createAsyncThunk(
   'order/rateOrder',
   async ({ orderId, rating, review }, { getState, rejectWithValue }) => {

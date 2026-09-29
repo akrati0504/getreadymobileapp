@@ -3,6 +3,7 @@ import { View, Image, TouchableOpacity, TextInput, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styles from '../css/TopHeaderStyles';
 import AccountMenuModal from './AccountMenuModal';
 import NotificationsModal from './NotificationsModal';
@@ -12,6 +13,7 @@ const TopHeader = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
+  const insets = useSafeAreaInsets();
   const { unreadCount } = useSelector(state => state.notifications);
   
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,7 +35,7 @@ const TopHeader = () => {
 
   return (
     <>
-      <View style={styles.headerRow}>
+      <View style={[styles.headerRow, { paddingTop: Math.max(insets.top, 10) }]}>
         <TouchableOpacity onPress={handleLogoPress}>
           <Image source={require('../assets/images/logo.png')} style={styles.logoImage} resizeMode="contain" />
         </TouchableOpacity>

@@ -1,15 +1,17 @@
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styles from '../css/BottomNavStyles';
 import { useSelector } from 'react-redux';
 
 const BottomNav = ({ state, descriptors, navigation }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const cartCount = useSelector((state) => state.cart?.cartCount || 0);
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.tabBarContainer}>
+    <View style={[styles.tabBarContainer, { paddingBottom: insets.bottom, height: 60 + insets.bottom }]}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         

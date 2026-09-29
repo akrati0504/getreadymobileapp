@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchSales } from '../redux/slices/orderSlice';
 import styles from '../css/AnalyticsStyles';
 import TopHeader from '../components/TopHeader';
+import api, { BASE_URL, IMAGE_BASE_URL } from '../api/api';
 
 const Analytics = () => {
   const navigation = useNavigation();
@@ -105,9 +106,8 @@ const Analytics = () => {
               {sales.data.map((order) => {
                 const firstItem = order.items && order.items.length > 0 ? order.items[0] : null;
                 const clothName = firstItem?.cloth?.title || 'Sale Item';
-                const API_BASE_URL = 'http://192.168.1.5:8000';
                 const imageSource = firstItem?.cloth?.images?.[0]?.image_path 
-                    ? { uri: `${API_BASE_URL}/storage/${firstItem.cloth.images[0].image_path}` }
+                    ? { uri: `${IMAGE_BASE_URL}/${firstItem.cloth.images[0].image_path}` }
                     : require('../assets/images/logo.png');
                 
                 const type = order.has_rental_items ? 'Rental' : 'Purchase';
@@ -119,7 +119,7 @@ const Analytics = () => {
                 
                 const handleInvoiceDownload = () => {
                   if (invoice) {
-                    Linking.openURL(`${API_BASE_URL}/invoices/${invoice.id}/download?token=${token}`);
+                    Linking.openURL(`${BASE_URL}/api/invoices/${invoice.id}/download?token=${token}`);
                     setActiveInvoiceMenu(null);
                   }
                 };

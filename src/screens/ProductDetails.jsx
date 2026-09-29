@@ -7,7 +7,7 @@ import { addToCart } from '../redux/slices/cartSlice';
 import styles from '../css/ProductDetailsStyles';
 import TopHeader from '../components/TopHeader';
 
-import api from '../api/api';
+import api, { IMAGE_BASE_URL } from '../api/api';
 
 const CustomCalendar = ({ selectedDate, onSelect, minDate, onClose }) => {
   const [currentMonth, setCurrentMonth] = useState(minDate ? new Date(minDate) : new Date());
@@ -334,7 +334,7 @@ const ProductDetails = () => {
 
   // Format images cleanly from Laravel relationship
   const gallery = Array.isArray(product.images) && product.images.length > 0
-    ? product.images.map(img => `http://192.168.1.5:8000/storage/${img.image_path}`)
+    ? product.images.map(img => `${IMAGE_BASE_URL}/${img.image_path}`)
     : [];
 
   return (

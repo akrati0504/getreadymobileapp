@@ -12,7 +12,7 @@ const AccountMenuModal = ({ visible, onClose }) => {
     { id: 1, title: 'My Listings', icon: 'list-outline', screen: 'Listings' },
     { id: 2, title: 'Sales Dashboard', icon: 'stats-chart-outline', screen: 'Analytics' },
     { id: 3, title: 'My Orders', icon: 'bag-outline', screen: 'Cart' },
-    { id: 4, title: 'My Invoices', icon: 'receipt-outline', screen: 'Home' },
+    { id: 4, title: 'My Invoices', icon: 'receipt-outline', screen: 'MyInvoices' },
     { id: 5, title: 'My Transactions', icon: 'cash-outline', screen: 'Home' },
     { id: 6, title: 'Rejected Items', icon: 'close-circle-outline', screen: 'RejectedItems' },
     { id: 7, title: 'Profile Settings', icon: 'settings-outline', screen: 'Profile' },
