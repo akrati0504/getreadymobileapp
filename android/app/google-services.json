@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "231747523911",
+    "project_id": "getready-567a6",
+    "storage_bucket": "getready-567a6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:231747523911:android:bad5f749389daf22b66862",
+        "android_client_info": {
+          "package_name": "com.getreadymobileapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAF3XmIZQ1fdOLJqEG6eUMb8eY626uJUA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
