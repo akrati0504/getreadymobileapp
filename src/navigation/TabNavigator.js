@@ -11,6 +11,7 @@ import Analytics from '../screens/Analytics';
 import Browse from '../screens/Browse';
 import EditCloth from '../screens/EditCloth';
 import MyInvoices from '../screens/MyInvoices';
+import MyTransactions from '../screens/MyTransactions';
 import BottomNav from '../components/BottomNav';
 
 const Tab = createBottomTabNavigator();
@@ -47,6 +48,13 @@ const TabNavigator = () => {
       <Tab.Screen
         name="MyInvoices"
         component={MyInvoices}
+        options={{
+          tabBarItemStyle: { display: 'none' }
+        }}
+      />
+      <Tab.Screen
+        name="MyTransactions"
+        component={MyTransactions}
         options={{
           tabBarItemStyle: { display: 'none' }
         }}

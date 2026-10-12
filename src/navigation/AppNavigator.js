@@ -7,6 +7,8 @@ import Splash from '../screens/Splash';
 import RejectedItems from '../screens/RejectedItems';
 import Browse from '../screens/Browse';
 import FixRejection from '../screens/FixRejection';
+import MyInvoices from '../screens/MyInvoices';
+import MyTransactions from '../screens/MyTransactions';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +22,8 @@ const AppNavigator = () => {
       <Stack.Screen name="RejectedItems" component={RejectedItems} />
       <Stack.Screen name="FixRejection" component={FixRejection} />
       <Stack.Screen name="Browse" component={Browse} />
+      <Stack.Screen name="MyInvoices" component={MyInvoices} />
+      <Stack.Screen name="MyTransactions" component={MyTransactions} />
     </Stack.Navigator>
   );
 };

@@ -18,6 +18,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { loginStart, loginSuccess } from '../redux/slices/authSlice';
 import styles from '../css/LoginStyles';
+import { getFCMToken } from '../utils/fcmHelper';
 import api from '../api/api';
 
 const Login = ({ navigation }) => {
@@ -68,7 +69,12 @@ const Login = ({ navigation }) => {
     dispatch(loginStart());
     setIsLoading(true);
     try {
-      const response = await api.post('/auth/login/verify-otp', { phone, otp });
+      const fcm_token = await getFCMToken();
+      if (!fcm_token) {
+        Alert.alert("Debug", "FCM token could not be generated on this device. Please check Firebase setup or permissions.");
+      }
+      
+      const response = await api.post('/auth/login/verify-otp', { phone, otp, fcm_token });
       
       if (response.data.success) {
         if (response.data.is_new_user) {
@@ -94,13 +100,19 @@ const Login = ({ navigation }) => {
     dispatch(loginStart());
     setIsLoading(true);
     try {
+      const fcm_token = await getFCMToken();
+      if (!fcm_token) {
+        Alert.alert("Debug", "FCM token could not be generated on this device. Please check Firebase setup or permissions.");
+      }
+      
       const payload = {
         phone,
         verification_token: verificationToken,
         age,
         gender,
         is_gst: parseInt(isGst, 10),
-        gstin: isGst === '1' ? gstin : ''
+        gstin: isGst === '1' ? gstin : '',
+        fcm_token
       };
 
       const response = await api.post('/auth/login/complete-registration', payload);

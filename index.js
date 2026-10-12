@@ -9,9 +9,20 @@ import messaging from '@react-native-firebase/messaging';
 import { name as appName } from './app.json';
 
 try {
-  messaging().setBackgroundMessageHandler(async remoteMessage => {
-    console.log('Message handled in the background!', remoteMessage);
-  });
+  const messagingModule = require('@react-native-firebase/messaging');
+  let m = null;
+  if (typeof messagingModule === 'function') m = messagingModule;
+  else if (messagingModule && typeof messagingModule.default === 'function') m = messagingModule.default;
+  
+  if (m) {
+    m().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Message handled in the background!', remoteMessage);
+    });
+  } else if (messagingModule && typeof messagingModule.setBackgroundMessageHandler === 'function') {
+    messagingModule.setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Message handled in the background!', remoteMessage);
+    });
+  }
 } catch (e) {
   console.log("Failed to set background message handler:", e);
 }

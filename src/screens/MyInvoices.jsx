@@ -170,10 +170,16 @@ const MyInvoices = () => {
             </View>
             <Text style={styles.pageSubtitle}>Manage and download your receipts.</Text>
           </View>
-          <TouchableOpacity style={styles.myOrdersButton} onPress={() => navigation.navigate('Cart')}>
-            <Icon name="bag-outline" size={16} color="#4b5563" />
-            <Text style={styles.myOrdersText}>My Orders</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <TouchableOpacity style={styles.myOrdersButton} onPress={() => navigation.navigate('MyTransactions')}>
+              <Icon name="card-outline" size={16} color="#d97706" />
+              <Text style={styles.myOrdersText}>Transactions</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.myOrdersButton} onPress={() => navigation.navigate('Cart')}>
+              <Icon name="bag-outline" size={16} color="#4b5563" />
+              <Text style={styles.myOrdersText}>My Orders</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {loading ? (

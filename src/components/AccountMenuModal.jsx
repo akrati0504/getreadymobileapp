@@ -2,18 +2,23 @@ import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '../redux/slices/authSlice';
 
 const { width, height } = Dimensions.get('window');
 
 const AccountMenuModal = ({ visible, onClose }) => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth?.user);
+  const displayName = user?.name || user?.mobile_number || (user?.id ? `User-${user.id}` : 'User-8236');
 
   const menuItems = [
     { id: 1, title: 'My Listings', icon: 'list-outline', screen: 'Listings' },
     { id: 2, title: 'Sales Dashboard', icon: 'stats-chart-outline', screen: 'Analytics' },
     { id: 3, title: 'My Orders', icon: 'bag-outline', screen: 'Cart' },
     { id: 4, title: 'My Invoices', icon: 'receipt-outline', screen: 'MyInvoices' },
-    { id: 5, title: 'My Transactions', icon: 'cash-outline', screen: 'Home' },
+    { id: 5, title: 'My Transactions', icon: 'cash-outline', screen: 'MyTransactions' },
     { id: 6, title: 'Rejected Items', icon: 'close-circle-outline', screen: 'RejectedItems' },
     { id: 7, title: 'Profile Settings', icon: 'settings-outline', screen: 'Profile' },
   ];
@@ -31,7 +36,7 @@ const AccountMenuModal = ({ visible, onClose }) => {
             <View style={styles.menuContainer}>
               <View style={styles.accountHeader}>
                 <Text style={styles.accountLabel}>ACCOUNT</Text>
-                <Text style={styles.userName}>User-8236</Text>
+                <Text style={styles.userName}>{displayName}</Text>
               </View>
 
               <View style={styles.menuList}>
@@ -53,6 +58,7 @@ const AccountMenuModal = ({ visible, onClose }) => {
                   style={[styles.menuItem, styles.logoutItem]} 
                   onPress={() => {
                     onClose();
+                    dispatch(logoutUser());
                     navigation.replace('Login');
                   }}
                 >

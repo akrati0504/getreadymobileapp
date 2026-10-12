@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api/api';
+import { getFCMToken } from '../../utils/fcmHelper';
 
 export const sendOtp = createAsyncThunk(
   'auth/sendOtp',
@@ -17,7 +18,9 @@ export const verifyOtp = createAsyncThunk(
   'auth/verifyOtp',
   async (verificationData, { dispatch, rejectWithValue }) => {
     try {
-      const response = await api.post('/auth/login/verify-otp', verificationData);
+      const fcm_token = await getFCMToken();
+      const payload = { ...verificationData, fcm_token };
+      const response = await api.post('/auth/login/verify-otp', payload);
       if (response.data.success && response.data.data) {
           // Keep backwards compatibility with the existing manual reducer call
           dispatch(loginSuccess(response.data.data));
